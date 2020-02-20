@@ -1,0 +1,23 @@
+{
+  "name": "hashcode-2020",
+  "version": "1.0.0",
+  "description": "",
+  "main": "solution.js",
+  "dependencies": {
+    "ramda": "^0.27.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/biltongza/hashcode-2020.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/biltongza/hashcode-2020/issues"
+  },
+  "homepage": "https://github.com/biltongza/hashcode-2020#readme"
+}
