@@ -59,9 +59,48 @@ for (let i = 0; i < libraries.length; i++) {
 }
 
 const diff = (a, b) => b.weighting - a.weighting;
-const orderedLibraries = R.sort(diff, libraries); //=> [2, 4, 5, 7]
+let orderedLibraries = R.sort(diff, libraries);
 
-const numberOfLibrariesToSignUp = orderedLibraries.length;
+const topChunk = 25;
+
+const booksAlreadyOrdered = [];
+const librariesToUse = [];
+
+const removeDuplicates = (booksAlreadyOrdered, { libraryBooks }) => {
+  const toKeep = R.without(booksAlreadyOrdered, R.pluck("id", libraryBooks));
+  return R.filter(b => toKeep.includes(b.id), libraryBooks);
+};
+
+const processChunk = librariesRemaining => {
+  for (let i = 0; i < R.min(topChunk, librariesRemaining.length); i++) {
+    booksAlreadyOrdered.push(
+      ...librariesRemaining[i].libraryBooks.map(d => d.id)
+    );
+    // console.log(booksAlreadyOrdered);
+    librariesToUse.push(librariesRemaining[i]);
+    librariesRemaining.splice(i, 1);
+  }
+
+  for (let i = 0; i < librariesRemaining.length; i++) {
+    librariesRemaining[i].libraryBooks = removeDuplicates(
+      booksAlreadyOrdered,
+      librariesRemaining[i]
+    );
+
+    librariesRemaining[i].weighting = calculateWeighting(
+      librariesRemaining[i],
+      daysOfScanning
+    );
+  }
+};
+
+const chunksToProcess = Math.floor(orderedLibraries.length / topChunk) + 1;
+
+for (let i = 0; i < chunksToProcess; i++) {
+  processChunk(orderedLibraries);
+}
+
+const numberOfLibrariesToSignUp = librariesToUse.length;
 
 const file = fs.createWriteStream(
   problems[process.argv.slice(2)[0]].solutionFile
@@ -71,8 +110,8 @@ const file = fs.createWriteStream(
 
 file.write(`${numberOfLibrariesToSignUp}`);
 file.write("\r\n");
-for (let i = 0; i < orderedLibraries.length; i++) {
-  const library = orderedLibraries[i];
+for (let i = 0; i < librariesToUse.length; i++) {
+  const library = librariesToUse[i];
   file.write(`${library.id} ${library.libraryBooks.length}`);
   file.write("\r\n");
 

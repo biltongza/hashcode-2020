@@ -27,15 +27,18 @@ const getOrderedBooks = (unorderedBooks, bookScores) => {
 };
 
 const calculateWeighting = (library, daysOfScanning) => {
-  const libraryHeaderParts = R.split(" ", library.libraryDetails) 
-  const signupLength = Number(libraryHeaderParts[1]);
-  const booksCanShip = Number(libraryHeaderParts[2]);
-  const weight = (daysOfScanning - signupLength) * booksCanShip;
+  const signupLength = Number(R.split(" ", library.libraryDetails)[1]);
+  const booksCanShip = Number(R.split(" ", library.libraryDetails)[2]);
+  const libraryPerformance = (daysOfScanning - signupLength) * booksCanShip;
 
-  return weight;
+  const totalBookValue = R.sum(R.pluck("value", library.libraryBooks));
+
+  const weightedPerformace = totalBookValue / libraryPerformance;
+
+  return weightedPerformace;
 };
 
 module.exports = {
-    getOrderedBooks,
-    calculateWeighting,
+  getOrderedBooks,
+  calculateWeighting
 };
