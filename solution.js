@@ -44,16 +44,15 @@ const scoresOfBooks = R.map(score => Number(score))(R.split(" ", secondRow));
 
 const libraries = [];
 for (let i = 2; i <= numberOfLibraries + 2; i += 2) {
+  const lines = R.split("\n", contents);
   const library = {
-    libraryDetails: R.split("\n", contents)[i],
-    libraryBooks: getOrderedBooks(R.split("\n", contents)[i + 1], scoresOfBooks),
+    libraryDetails: lines[i],
+    libraryBooks: getOrderedBooks(lines[i + 1], scoresOfBooks),
     id: i / 2 - 1
   };
 
   libraries.push(library);
 }
-
-
 
 for (let i = 0; i < libraries.length; i++) {
   libraries[i].weighting = calculateWeighting(libraries[i], daysOfScanning);
