@@ -55,10 +55,10 @@ const getOrderedBooks = (unorderedBooks) => {
 
   const booksWithDetails = [];
 
-  for (let i = 0 ; i < booksAsNumbers.length ; i++) {
+  for (let i = 0; i < booksAsNumbers.length; i++) {
     booksWithDetails.push({
       value: scoresOfBooks[i],
-      index: i
+      id: booksAsNumbers[i],
     });
   }
 
@@ -66,22 +66,19 @@ const getOrderedBooks = (unorderedBooks) => {
   const diff = (a, b) => { return b.value - a.value; };
   const orderedBooks = R.sort(diff, booksWithDetails); //=> [2, 4, 5, 7]
 
-  console.log(orderedBooks)
-
   return orderedBooks;
 };
 
 const libraries = [];
-
-for (let i = 2; i <= (numberOfLibraries + 2) ; i += 2){
+for (let i = 2; i <= (numberOfLibraries + 2); i += 2) {
   const library = {
     libraryDetails: R.split('\n', contents)[i],
-    libraryBooks: getOrderedBooks(R.split('\n', contents)[i + 1])
+    libraryBooks: getOrderedBooks(R.split('\n', contents)[i + 1]),
+    id: i / 2 - 1,
   }
 
   libraries.push(library);
 }
-
 
 const calculateWeighting = (library) => {
   const signupLength = Number(R.split(' ', library.libraryDetails)[1]);
@@ -91,16 +88,32 @@ const calculateWeighting = (library) => {
   return weight;
 }
 
-for(let i = 0 ; i < libraries.length ; i++) {
+for (let i = 0; i < libraries.length; i++) {
   libraries[i].weighting = calculateWeighting(libraries[i]);
 }
 
+const diff = (a, b) => b.weighting - a.weighting;
+const orderedLibraries = R.sort(diff, libraries); //=> [2, 4, 5, 7]
 
 
-// var file = fs.createWriteStream(someOutputFileName);
+const numberOfLibrariesToSignUp = orderedLibraries.length;
+
+
+
+const file = fs.createWriteStream(problems[process.argv.slice(2)[0]].solutionFile);
 
 // file.on('error', function(err) { /* error handling */ });
 
-// file.write(someData);
+file.write(`${numberOfLibrariesToSignUp}`);
+file.write('\r\n');
+for (let i = 0; i < orderedLibraries.length; i++) {
+  const library = orderedLibraries[i];
+  file.write(`${library.id} ${library.libraryBooks.length}`);
+  file.write('\r\n');
 
-// file.end();
+  file.write(library.libraryBooks.map(d => d.id).join(' '));
+  file.write('\r\n');
+
+}
+
+file.end();
